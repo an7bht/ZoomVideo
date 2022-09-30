@@ -9,7 +9,7 @@ const myVideo = document.createElement('video')
 myVideo.muted = true
 const peers = {}
 navigator.mediaDevices.getUserMedia({
-  video: true,
+  video:{ width: 1920, height: 1080 },
   audio: true
 }).then(stream => {
   myVideo.id = myPeer.id
