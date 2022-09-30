@@ -8,16 +8,17 @@ const myPeer = new Peer()
 const myVideo = document.createElement('video')
 myVideo.muted = true
 const peers = {}
-const videos = []
 navigator.mediaDevices.getUserMedia({
   video: true,
   audio: true
 }).then(stream => {
+  myVideo.id = myPeer.id
   addVideoStream(myVideo, stream)
 
   myPeer.on('call', call => {
     call.answer(stream)
     const video = document.createElement('video')
+    video.id = call.peer
     call.on('stream', userVideoStream => {
       addVideoStream(video, userVideoStream)
     })
@@ -29,32 +30,21 @@ navigator.mediaDevices.getUserMedia({
 })
 
 socket.on('user-disconnected', userId => {
-  if (peers[userId]) 
-  peers[userId].close()
-  if(videos.some(v => v.id == userId)){
-    var video = videos.find(v => v.id == userId)
-    video.control.remove()
-    videos.remove(video)
-  }
+  if (peers[userId]) { peers[userId].close() }
+  try { document.getElementById(userId).remove() } catch(e) { }
 })
 
 myPeer.on('open', id => {
   socket.emit('join-room', ROOM_ID, id)
-  if(videos.some(v => v.id == userId)){
-   id.remove()
-  }
 })
 
 function connectToNewUser(userId, stream) {
   const call = myPeer.call(userId, stream)
   const video = document.createElement('video')
+  video.id = userId
   call.on('stream', userVideoStream => {
     addVideoStream(video, userVideoStream)
-    videos.push({ id: userId, control: video })
   })
-//   call.on('close', () => {
-//     video.remove()
-//   })
 
    peers[userId] = call
 }

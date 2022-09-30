@@ -4,6 +4,7 @@ const app = express()
 const server = require('http').Server(app)
 const io = require('socket.io')(server)
 const { v4: uuidV4 } = require('uuid')
+var rooms = []
 
 app.set('view engine', 'ejs')
 app.use(express.static('public'))
@@ -18,11 +19,17 @@ app.get('/:room', (req, res) =>{
 
 io.on('connection', socket => {
     socket.on('join-room',(roomId, userId)=>    {
+        if(!rooms.includes(roomId)) { rooms.push(roomId) }
         socket.join(roomId)
         socket.to(roomId).emit('user-connected', userId)
+        console.log('Online room list: ',rooms)
 
         socket.on('disconnect', () => {
             socket.to(roomId).emit('user-disconnected', userId)
+            if(!io.sockets.adapter.rooms[roomId]){
+                rooms = rooms.filter(r => r != roomId)
+                console.log('Online room list: ',rooms)
+            }
           })
     })
    
