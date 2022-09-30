@@ -40,6 +40,9 @@ socket.on('user-disconnected', userId => {
 
 myPeer.on('open', id => {
   socket.emit('join-room', ROOM_ID, id)
+  if(videos.some(v => v.id == userId)){
+   id.remove()
+  }
 })
 
 function connectToNewUser(userId, stream) {
