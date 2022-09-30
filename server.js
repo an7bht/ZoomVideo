@@ -1,19 +1,6 @@
 //const fs = require('fs')
 const express = require('express')
 const app = express()
-const { ExpressPeerServer } = require('peer');
-// const { PeerServer } = require('peer');
-// const peerServer = PeerServer({ port: 9000, path: '/myapp' });
-//const https = require('https')
-
-// const key = fs.readFileSync('key.pem','utf-8')
-// const cert = fs.readFileSync('cert.pem','utf-8')
-// const options = {
-//   key: key,
-//   cert: cert,
-//   passphrase: '123456'
-// }
-//const server = https.Server(options,app)
 const server = require('http').Server(app)
 const io = require('socket.io')(server)
 const { v4: uuidV4 } = require('uuid')
@@ -41,10 +28,6 @@ io.on('connection', socket => {
    
 })
 
-app.enable('trust proxy');
-const peerServer = ExpressPeerServer(server, {
-  path: '/'
-});
 
 module.exports = app;
     server.listen(process.env.PORT || 3000,()=> {
